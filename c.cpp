@@ -23,6 +23,12 @@ int main(int argc, char *argv[]){
 
 	TriDeSetka myMesh;
 
+	//отправляем нашу сетку в принтер,ч тобыон сгенериовалвтк файл
+	Printer myPrinter(&myMesh);
+
+	//вызываем метод печати, как параллепипед
+	const bool res{myPrinter.print_Paralepip("cppMyX_Y_Z.vtk")};
+
 	//построить сетку, то есть сгенерировать все узлы и записать их в файл
 	const bool res_pu_scr1 = py_script("mp.py");
 

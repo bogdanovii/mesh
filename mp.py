@@ -307,6 +307,6 @@ b = 0
 c = 1
 d = -1000
 
-setka1.sdvig_v_sloe_XZ_coord_Z_do_ploskosti_Z(BoundLow_X, BoundUp_X, a, b, c, d)
+#setka1.sdvig_v_sloe_XZ_coord_Z_do_ploskosti_Z(BoundLow_X, BoundUp_X, a, b, c, d)
 
 vtkPrint.print_Paralepip()
