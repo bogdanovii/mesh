@@ -1,11 +1,11 @@
 {
-"xStart" : 50,
-"xFinish" : 100,
-"yStart" : 150,
-"yFinish" : 200,
-"zStart" : 250,
-"zFinish" : 300,
-"StepX" : 70,
-"StepY" : 80,
-"StepZ" : 90
+  "xStart" : 50,
+  "xFinish" : 100,
+  "yStart" : 150,
+  "yFinish" : 200,
+  "zStart" : 250,
+  "zFinish" : 300,
+  "StepX" : 10,
+  "StepY" : 10,
+  "StepZ" : 10
 }

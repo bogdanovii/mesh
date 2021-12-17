@@ -7,30 +7,38 @@ class Setka:
         #сетка лежит в координатах xStart xFinish
         #yStart yFinich
         #z будут координаты, соответствующие нашей фигуре
-        import border_step_chyzlov_yacheek_setka
-        #self.xStart = -50
-        self.xFinish = 50
+        #import border_step_chyzlov_yacheek_setka
+        with open("border_step_chyzlov_yacheek_setka.py", "r") as json_file:
+            data = json.load(json_file)
+        json_file.close()
 
-        self.yStart = -50
-        self.yFinish = 50
+        self.xStart = data['xStart']
+        self.xFinish = data['xFinish']
 
-        self.zStart = -50
-        self.zFinish = 50
+        self.yStart = data['yStart']
+        self.yFinish = data['yFinish']
+
+        self.zStart = data['zStart']
+        self.zFinish = data['zFinish']
+
 
         #зададим шаг сетки вдоль каждой из осей x и y
-        self.StepX = 15
-        self.StepY = 15
-        self.StepZ = 15
+        self.StepX = data['StepX']
+        self.StepY = data['StepY']
+        self.StepZ = data['StepZ']
 
         #количество узлов вдоль каждой из осей
         #Количество узлов вдоль каждой оси, ну если все узлы на ось
         #спроецировать
-        self.N_x = int(  abs(self.xStart - self.xFinish) / self.StepX ) + 1
-        self.N_y = int(  abs(self.yStart - self.yFinish) / self.StepY ) + 1
-        self.N_z = int(  abs(self.zStart - self.zFinish) / self.StepZ ) + 1
+        self.N_x = data['N_x']
+        self.N_y = data['N_y']
+        self.N_z = data['N_z']
         #Следует понимать, что в это число узловв мы не вклюичли
         #Узел начала оси, поэтому общее число узлов:
-        self.Number_of_nodes = (self.N_x )*(self.N_y )*(self.N_z )
+        self.Number_of_nodes = data['Number_of_nodes']
+        #Число ячеек
+        self.Number_of_cells = data['Number_of_cells']
+
 
         #создадим матрицу для хранения координт узлов
         # [x1ряд от оси х 1место,y,z1], [x1ряд2место,y2, z2], ...... [х 1 self.N_x , y ,zself.N_x]
@@ -61,18 +69,24 @@ class Setka:
         for x in range(self.N_x):#от каждого икс игрека растим зед
             for y in range(self.N_y):
                 for z in range(self.N_z):
-                    self.coord_of_Nodes[x][y][z] = [0, 0, 0]
+                    self.coord_of_Nodes[x][y][z] = [-9999, -9999, -9999]
 
-        for x in range(self.N_x):#от каждого икс игрека растим зед
+
+        #считываем координаты
+        with open("Coord_of_Node.py", "r") as json_file:
+            data = json.load(json_file)
+        json_file.close()
+
+
+        i = 0
+        for x in range(self.N_x):
             for y in range(self.N_y):
                 for z in range(self.N_z):
-                    self.coord_of_Nodes[x][y][z] = [x * self.StepX, y * self.StepY, z * self.StepZ]
-
-        #print(self.coord_of_Nodes)
+                    self.coord_of_Nodes[x][y][z] = [data['Coord_of_Nodes'][i]['x'], data['Coord_of_Nodes'][i]['y'], data['Coord_of_Nodes'][i]['z']]
+                    i = i + 1
 
         ########################################
-        #Число ячеек
-        self.Number_of_cells = (self.N_x - 1) * (self.N_y - 1) * (self.N_z - 1)
+        print("########################################")
 
 
 

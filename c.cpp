@@ -7,10 +7,11 @@
 //#include <boost/filesystem/operations.hpp>
 //#include <boost/filesystem.hpp>
 #include<boost/lexical_cast.hpp>
+#include <regex>
 
 
 #include"f.h"
-#include"TriDeSetka.h"
+#include "class.h"
 
 
 
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]){
 	TriDeSetka myMesh;
 
 	//построить сетку, то есть сгенерировать все узлы и записать их в файл
-	//const bool res_pu_scr1 = py_script("postroyka_setki.py");
+	const bool res_pu_scr1 = py_script("mp.py");
 
 	//когда сетка потроена, вызвать принтер передав в него сетку , в классе сетка должен быть тип сетки
 

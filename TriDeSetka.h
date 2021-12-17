@@ -29,6 +29,9 @@ class TriDeSetka{
 
 		//число узлов
 		int Number_of_nodes;
+		int Number_of_cells;
+
+		std::vector<Coord_of_Node> c_of_n;
 
 		void check_bscy(){//порверка файла границу, шага\, чисоа ячеек
 
@@ -36,48 +39,12 @@ class TriDeSetka{
 			//const bool res{analiz_faula_border_step_chyzlov_yacheek("border_step_chyzlov_yacheek")}
       //
       const std::pair< bool, std::vector<std::string> > my_pair = readFile(this->border_step_chyzlov_yacheek);
+
       if(my_pair.first == false){
         std::cerr << "Не удалось открыть файл c границами и шагами!" << std::endl;
         std::cerr << "Для данный файл с образцовыми данными будет сгенерирован автоматически." << std::endl;
         // в будущем добавить проверку на то что файл существует в папке, но просто занят другим процессом
-
-        //наш файл в формате json будет выглядеть:
-        /*
-        {
-          "xStart": 25.4,
-          "xFinich": 35.4
-        }
-        */
-
-				std::vector<std::string> bscy_r{checkBSCY};
-
-				for(int i = 0; i < bscy_r.size(); i++){
-					if(i == 0){
-						continue;
-					}/*if*/
-					if((i < 7) && (i > 0)){
-						bscy_r.at(i) = bscy_r.at(i) + std::to_string(50*i) + ",";
-						continue;
-					}/*if*/
-					if((i > 6) && (i < 10)){
-						bscy_r.at(i) = bscy_r.at(i) + std::to_string(10*i) + ",";
-						if(i == (bscy_r.size() - 1)){
-							bscy_r.at(i).pop_back();//удалили последнюю запятую
-						}/*if*/
-						continue;
-					}/*if*/
-					if(i == (bscy_r.size() - 1)){
-						bscy_r.at(i).pop_back();//удалили последнюю запятую
-						continue;
-					}/*if*/
-
-				}/*for*/
-
-				//создаем файл с таким именем
-				const bool isGoodRes = reWriteFile(this->border_step_chyzlov_yacheek, bscy_r);
-				if(!isGoodRes){
-					std::cerr << "ERROR: Failed to write" << std::endl;
-				}
+				generate_bscy();
 			}/*if*/
 
       else{//my_pair.first == true
@@ -128,36 +95,123 @@ class TriDeSetka{
 
 				//Узел начала оси, поэтому общее число узлов:
 				this->Number_of_nodes = (this->N_x )*(this->N_y )*(this->N_z );
+				this->Number_of_cells = (this->N_x - 1)*(this->N_y - 1)*(this->N_z - 1);
 
-				//сделаем файлик для питона
-				std::vector<std::string> pyImport;
-				pyImport.push_back("xStart = " + std::to_string(this->xStart));
-				const bool res = reWriteFile((border_step_chyzlov_yacheek + ".py"), pyImport);
-				boost::property_tree::ptree root;
-				// Once our ptree was constructed, we can generate JSON on standard output
-				//boost::property_tree::write_json(std::cout, root);
-				root.put<int>("xStart", 10);
-				//https://stackoverflow.com/questions/2855741/why-does-boost-property-tree-write-json-save-everything-as-string-is-it-possibl
-				std::ostringstream oss;
-				boost::property_tree::write_json(oss, root);
-				std::cout << oss.str() << std::endl;
+
 
       }/*else*/
-
-
-			//const bool res{analiz_faula_border_step_chyzlov_yacheek("ttt")};
-
-
 		}/*check_bscy*/
 
+		void write_bscy_to_py(){
+			boost::property_tree::ptree root;
+			root.put("xStart", this->xStart);
+			root.put("xFinish", this->xFinish);
+			root.put("yStart", this->yStart);
+			root.put("yFinish", this->yFinish);
+			root.put("zStart", this->zStart);
+			root.put("zFinish", this->zFinish);
+			root.put("StepX", this->StepX);
+			root.put("StepY", this->StepY);
+			root.put("StepZ", this->StepZ);
+			root.put("N_x", this->N_x);
+			root.put("N_y", this->N_y);
+			root.put("N_z", this->N_z);
+			root.put("Number_of_nodes", this->Number_of_nodes);
+			root.put("Number_of_cells", this->Number_of_cells);
+
+			const std::string result = writeJsonToString(root);
+
+			//сделаем файлик для питона
+			std::vector<std::string> pyImport;
+			pyImport.push_back(result);
+			const bool res = reWriteFile((border_step_chyzlov_yacheek + ".py"), pyImport);
+		}
+
+		void generate_bscy(){
+			std::vector<std::string> bscy_r{checkBSCY};
+
+			for(int i = 0; i < bscy_r.size(); i++){
+				if(i == 0){
+					continue;
+				}/*if*/
+				if((i < 7) && (i > 0)){
+					bscy_r.at(i) = bscy_r.at(i) + std::to_string(50*i) + ",";
+					continue;
+				}/*if*/
+				if((i > 6) && (i < 10)){
+					bscy_r.at(i) = bscy_r.at(i) + std::to_string(5*i) + ",";
+					if(i == (bscy_r.size() - 1)){
+						bscy_r.at(i).pop_back();//удалили последнюю запятую
+					}/*if*/
+					continue;
+				}/*if*/
+				if(i == (bscy_r.size() - 1)){
+					bscy_r.at(i).pop_back();//удалили последнюю запятую
+					continue;
+				}/*if*/
+			}/*for*/
+
+			//создаем файл с таким именем
+			const bool isGoodRes = reWriteFile(this->border_step_chyzlov_yacheek, bscy_r);
+			if(!isGoodRes){
+				std::cerr << "ERROR: Failed to write" << std::endl;
+			}
+		}
+
+		void make_coord(){
+			//убедимся , что вектор пустой
+			if(c_of_n.size() == 0){
+				c_of_n.clear();
+			}
+
+			//перебор по x
+			for(int x = 0; x < N_x; x++){
+				//перебор по y
+				for(int y = 0; y < N_y; y++){
+					//перебор по z
+					for(int z = 0; z < N_z; z++){
+						Coord_of_Node cur(x,y,z);
+						c_of_n.push_back(cur);
+					}
+				}
+			}
+
+
+		}
+
+		void write_coord_to_py(){
+			boost::property_tree::ptree root;
+			boost::property_tree::ptree massivTochek;
+
+			for(int i = 0; i < c_of_n.size(); i++){
+				boost::property_tree::ptree subsubroot;
+				subsubroot.put("x", c_of_n.at(i).getX());
+				subsubroot.put("y", c_of_n.at(i).getY());
+				subsubroot.put("z", c_of_n.at(i).getZ());
+				massivTochek.push_back(std::make_pair("", subsubroot));
+			}
+
+			//Массив
+			root.add_child("Coord_of_Nodes", massivTochek);
+			//отправка корня для печати джейсона
+			const std::string result = writeJsonToString(root);
+			//std::cout << result << std::endl;
+			//сделаем файлик для питона
+			std::vector<std::string> pyImport;
+			pyImport.push_back(result);
+			const bool res = reWriteFile((std::string("Coord_of_Node") + ".py"), pyImport);
+
+		}
 
 	public:
 		TriDeSetka(){
 			//проверяем существование и содержание наших файлов с параметрами сетки
       //все файлы в формате json
 			check_bscy();
-
-
+			write_bscy_to_py();
+			make_coord();
+			write_coord_to_py();
+			//		std::cerr << "ERROR" << this->c_of_n.size() << std::endl;
 
 
 		}
