@@ -26,6 +26,10 @@ class Coord_of_Node{
       return z;
     }
 
+    const std::string printCoordinate(){
+      return ("x = " + std::to_string(x) + ", y = " + std::to_string(y) + ", z = " + std::to_string(z) );
+    }
+
     Coord_of_Node(double x, double y, double z){
       setX(x);
       setY(y);

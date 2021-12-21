@@ -32,6 +32,7 @@ class TriDeSetka{
 		int Number_of_cells;
 
 		std::vector<Coord_of_Node> c_of_n;
+		std::vector<Coord_of_Node> c_of_nZYX;
 
 		void check_bscy(){//порверка файла границу, шага\, чисоа ячеек
 
@@ -160,7 +161,7 @@ class TriDeSetka{
 
 		void make_coord(){
 			//убедимся , что вектор пустой
-			if(c_of_n.size() == 0){
+			if(c_of_n.size() != 0){
 				c_of_n.clear();
 			}
 
@@ -170,12 +171,26 @@ class TriDeSetka{
 				for(int y = 0; y < N_y; y++){
 					//перебор по z
 					for(int z = 0; z < N_z; z++){
-						Coord_of_Node cur(x,y,z);
+						Coord_of_Node cur(x*StepX,y*StepY,z*StepZ);
 						c_of_n.push_back(cur);
 					}
 				}
 			}
 
+			if(c_of_nZYX.size() != 0){
+				c_of_n.clear();
+			}
+			//перебор по z
+			for(int z = 0; z < N_z; z++){
+				//перебор по y
+				for(int y = 0; y < N_y; y++){
+					//перебор по x
+					for(int x = 0; x < N_x; x++){
+						Coord_of_Node cur(x*StepX,y*StepY,z*StepZ);
+						c_of_nZYX.push_back(cur);
+					}
+				}
+			}
 
 		}
 
@@ -203,6 +218,62 @@ class TriDeSetka{
 
 		}
 
+		void read_coord_from_py(){
+			/*const std::pair< bool, std::vector<std::string> > my_pair = readFile("resPySdvig");
+			std::string res_of_fr;
+			for(int i = 0; i < my_pair.second.size(); i++){
+				if(i == 0){
+					res_of_fr = my_pair.second.at(i);
+				}
+				else{
+					res_of_fr = res_of_fr + " " + my_pair.second.at(i);
+				}
+			}
+			//std::cout << res_of_fr << std::endl;
+			std::stringstream jsonEncoded(res_of_fr);
+
+			boost::property_tree::ptree root;
+			boost::property_tree::read_json(jsonEncoded, root);
+			if(root.empty()){
+    		std::cerr <<"!!!!!!!!1" << std::endl;
+  		}*/
+			//boost::property_tree::ptree &corOF = root.get_child();//begin()->second;
+			//boost::property_tree::ptree &corOF = root.get_child("Coord_of_Nodes");
+			//corOF.get_value<std::vector>();
+			//std::cout << *corOF << std::endl;
+			//auto aaa = root.get("Coord_of_Nodes"[0]);
+			//std::string res_of_rs = getFieldFromJson(res_of_fr, "Coord_of_Nodes");
+			//std::cout << ret << std::endl;
+			const std::pair< bool, std::vector<std::string> > my_pair = readFile("p_to_c");
+			std::string res_of_fr;
+			for(int i = 0; i < my_pair.second.size(); i++){
+				if(i == 0){
+					res_of_fr = my_pair.second.at(i);
+				}
+				else{
+					res_of_fr = res_of_fr + " " + my_pair.second.at(i);
+				}
+			}
+			//std::cout << res_of_fr << std::endl;
+			std::stringstream ss{res_of_fr};
+			float temp;
+			std::vector <float> vec;
+			while(ss >> temp){
+				vec.push_back(temp);
+			}
+			//std::cerr << "ERROR" << std::endl;
+			std::vector<Coord_of_Node> c_of_n1;
+			for(int i = 0; i < (vec.size()); i++){
+				Coord_of_Node cur(vec.at(i),vec.at(i+1),vec.at(i+2));
+				i++;
+				i++;
+				c_of_n1.push_back(cur);
+			}
+			//std::cerr << "ERROR" << std::endl;
+			c_of_n = c_of_n1;
+			//std::vector<Coord_of_Node> c_of_nZYX;
+
+		}
 	public:
 		TriDeSetka(){
 			//проверяем существование и содержание наших файлов с параметрами сетки
@@ -212,8 +283,36 @@ class TriDeSetka{
 			make_coord();
 			write_coord_to_py();
 			//		std::cerr << "ERROR" << this->c_of_n.size() << std::endl;
+			read_coord_from_py();
 
 
+		}
+
+		const int getNumber_of_Nodes(){
+			return Number_of_nodes;
+		}
+		const std::vector<Coord_of_Node> getC_of_N(){
+				return c_of_n;
+		}
+
+		const std::vector<Coord_of_Node> getC_of_NZYX(){
+				return c_of_nZYX;
+		}
+
+		const int getNumber_of_Cells(){
+			return Number_of_cells;
+		}
+
+		const int getN_x(){
+			return N_x;
+		}
+
+		const int getN_y(){
+			return N_y;
+		}
+
+		const int getN_z(){
+			return N_z;
 		}
 
 
